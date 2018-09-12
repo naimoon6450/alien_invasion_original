@@ -5,6 +5,7 @@ from ship import Ship
 import functions as fu
 from pygame.sprite import Group
 
+
 def run_game():
         #Initialze and create a screen object
         pygame.init()
@@ -15,15 +16,23 @@ def run_game():
         #create the Ship
         ship = Ship(ai_set, screen)
         bullets = Group()
+        #alien group
+        aliens = Group()
 
         # setting background color
         bg_color = (26, 48, 85)
+
+        #make an alien
+        # alien = Alien(ai_set, screen)
+        #make fleet of aliens
+        fu.create_fleet(ai_set, screen, ship, aliens)
 
         while True:
             fu.check_events(ai_set, screen, ship, bullets)
             ship.update()
             fu.update_bullets(bullets)
+            fu.update_aliens(ai_set, aliens)
             #Redraw screen during each pass of loop
-            fu.update_screen(ai_set, screen, ship, bullets)
+            fu.update_screen(ai_set, screen, ship, aliens, bullets)
 
 run_game()
