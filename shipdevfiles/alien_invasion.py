@@ -6,6 +6,7 @@ import functions as fu
 from pygame.sprite import Group
 from game_stats import GameStats
 from button import Button
+from scoreboard import Scoreboard
 
 def run_game():
         #Initialze and create a screen object
@@ -19,6 +20,7 @@ def run_game():
 
         #create game stats
         stats = GameStats(ai_set)
+        sb = Scoreboard(ai_set, screen, stats)
 
         #create the Ship
         ship = Ship(ai_set, screen)
@@ -38,9 +40,9 @@ def run_game():
             fu.check_events(ai_set, screen, stats, play_button, ship, aliens, bullets)
             if stats.game_active:
                 ship.update()
-                fu.update_bullets(ai_set, screen, ship, aliens, bullets)
+                fu.update_bullets(ai_set, screen, stats, sb, ship, aliens, bullets)
                 fu.update_aliens(ai_set, stats, screen, ship, aliens, bullets)
             #Redraw screen during each pass of loop
-            fu.update_screen(ai_set, screen, stats, ship, aliens, bullets, play_button)
+            fu.update_screen(ai_set, screen, stats, sb, ship, aliens, bullets, play_button)
 
 run_game()

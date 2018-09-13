@@ -59,14 +59,17 @@ def check_kup_events(event, ship):
     elif event.key == pygame.K_LEFT:
         ship.moving_left = False
 
-def update_screen(ai_set, screen, stats, ship, alien, bullets, play_button):
+def update_screen(ai_set, screen, stats, sb, ship, alien, bullets, play_button):
     screen.fill(ai_set.bg_color)
     ship.blitme()
     #draw vs  blitme
     alien.draw(screen)
     #redraw all bullets behind ships and alien
     for bullet in bullets.sprites():
-        bullet.draw_bullet()
+        bullet.draw_bullet(stats)
+
+    #draw scoreboard
+    sb.show_score()
 
     #drwa play button if gam eis inactive
     if not stats.game_active:
@@ -81,7 +84,7 @@ def fire_bullet(ai_set, screen, ship, bullets):
         new_bullet = Bullet(ai_set, screen, ship)
         bullets.add(new_bullet)
 
-def update_bullets(ai_set, screen, ship, aliens, bullets):
+def update_bullets(ai_set, screen, stats, sb, ship, aliens, bullets):
         #group for bullets
         bullets.update()
         #get rid of bullets
@@ -89,17 +92,22 @@ def update_bullets(ai_set, screen, ship, aliens, bullets):
             if bullet.rect.bottom <= 0:
                 bullets.remove(bullet)
 
-        check_collisions(ai_set, screen, ship, aliens, bullets)
+        check_collisions(ai_set, screen, stats, sb, ship, aliens, bullets)
 
 
 
-def check_collisions(ai_set, screen, ship, aliens, bullets):
+def check_collisions(ai_set, screen, stats, sb, ship, aliens, bullets):
     #check if bullets collided, you can set first True to False for a super powered bullet
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+    if collisions:
+        for aliens in collisions.values():
+            stats.score += ai_set.alien_points #update score if there is a collision
+            sb.prep_score() #keep showing scores every time it updates
+
     if len(aliens) == 0:
         #destroy existing bullets and respawn
         bullets.empty()
-        ai_set.increase_speed()
+        ai_set.inc_speed()
         create_fleet(ai_set, screen, ship, aliens)
 
 def get_alien_num_x(ai_set, alien_width):
