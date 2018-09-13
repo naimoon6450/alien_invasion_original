@@ -4,18 +4,40 @@ from bullet import Bullet
 from alien import Alien
 from time import sleep
 
-def check_events(ai_set, screen, ship, bullets):
+def check_events(ai_set, screen, stats, play_button, ship, aliens, bullets):
     #Keyboard and mouse events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
         elif event.type == pygame.KEYDOWN:
-            check_kdown_events(event, ai_set, screen, ship, bullets)
+            check_kdown_events(event, ai_set, screen, stats, ship, bullets)
         elif event.type == pygame.KEYUP:
             check_kup_events(event, ship)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            check_play_button(ai_set, screen, stats, play_button, ship, aliens, bullets, mouse_x, mouse_y)
+
+def check_play_button(ai_set, screen, stats, play_button, ship, aliens, bullets, mouse_x, mouse_y):
+    #start new game on click
+    button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
+    if button_clicked and not stats.game_active:
+        #reset game settings
+        ai_set.initialize_dynamic_settings()
+        #hide mouse cursor
+        pygame.mouse.set_visible(False)
+        stats.reset_stats()
+        stats.game_active = True
+
+    #empty list of aliens and bullets
+    aliens.empty()
+    bullets.empty()
+
+    #create new fleet and center ship
+    create_fleet(ai_set, screen, ship, aliens)
+    ship.center_ship()
 
 #if key is pressed up
-def check_kdown_events(event, ai_set, screen, ship, bullets):
+def check_kdown_events(event, ai_set, screen, stats, ship, bullets):
     #move ship to the right
     if event.key == pygame.K_RIGHT:
         ship.moving_right = True
@@ -25,6 +47,8 @@ def check_kdown_events(event, ai_set, screen, ship, bullets):
         fire_bullet(ai_set, screen, ship, bullets)
     elif event.key == pygame.K_q:
         sys.exit()
+    elif event.key == pygame.K_p:
+        stats.game_active = True
 
 
 
@@ -75,6 +99,7 @@ def check_collisions(ai_set, screen, ship, aliens, bullets):
     if len(aliens) == 0:
         #destroy existing bullets and respawn
         bullets.empty()
+        ai_set.increase_speed()
         create_fleet(ai_set, screen, ship, aliens)
 
 def get_alien_num_x(ai_set, alien_width):
@@ -153,6 +178,7 @@ def ship_hit(ai_set, stats, screen, ship, aliens, bullets):
         sleep(0.5)
     else:
         stats.game_active = False
+        pygame.mouse.set_visible(True)
 
 
 def bottom_hit(ai_set, stats, screen, ship, aliens, bullets):
