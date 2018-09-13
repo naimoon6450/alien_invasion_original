@@ -35,7 +35,7 @@ def check_kup_events(event, ship):
     elif event.key == pygame.K_LEFT:
         ship.moving_left = False
 
-def update_screen(ai_set, screen, ship, alien, bullets):
+def update_screen(ai_set, screen, stats, ship, alien, bullets, play_button):
     screen.fill(ai_set.bg_color)
     ship.blitme()
     #draw vs  blitme
@@ -43,6 +43,10 @@ def update_screen(ai_set, screen, ship, alien, bullets):
     #redraw all bullets behind ships and alien
     for bullet in bullets.sprites():
         bullet.draw_bullet()
+
+    #drwa play button if gam eis inactive
+    if not stats.game_active:
+        play_button.draw_button()
 
     #make the drawscreen visible
     pygame.display.flip()
@@ -149,6 +153,7 @@ def ship_hit(ai_set, stats, screen, ship, aliens, bullets):
         sleep(0.5)
     else:
         stats.game_active = False
+
 
 def bottom_hit(ai_set, stats, screen, ship, aliens, bullets):
     #check if reached bottom
