@@ -33,9 +33,10 @@ def run_game():
 
         while True:
             fu.check_events(ai_set, screen, ship, bullets)
-            ship.update()
-            fu.update_bullets(ai_set, screen, ship, aliens, bullets)
-            fu.update_aliens(ai_set, stats, screen, ship, aliens, bullets)
+            if stats.game_active:
+                ship.update()
+                fu.update_bullets(ai_set, screen, ship, aliens, bullets)
+                fu.update_aliens(ai_set, stats, screen, ship, aliens, bullets)
             #Redraw screen during each pass of loop
             fu.update_screen(ai_set, screen, ship, aliens, bullets)
 
