@@ -98,7 +98,14 @@ def update_bullets(ai_set, screen, stats, sb, ship, aliens, bullets):
 
         check_collisions(ai_set, screen, stats, sb, ship, aliens, bullets)
 
-
+def new_level(ai_set, screen, stats, sb, ship, aliens, bullets):
+    #destroy existing bullets and respawn
+    bullets.empty()
+    ai_set.inc_speed()
+    #increase level
+    stats.level += 1
+    sb.prep_level()
+    create_fleet(ai_set, screen, ship, aliens)
 
 def check_collisions(ai_set, screen, stats, sb, ship, aliens, bullets):
     #check if bullets collided, you can set first True to False for a super powered bullet
@@ -110,15 +117,18 @@ def check_collisions(ai_set, screen, stats, sb, ship, aliens, bullets):
         check_high_score(stats, sb)
 
     if len(aliens) == 0:
-        #destroy existing bullets and respawn
-        bullets.empty()
-        ai_set.inc_speed()
+        new_level(ai_set, screen, stats, sb, ship, aliens, bullets)
 
-        #increase level
-        stats.level += 1
-        sb.prep_level()
-
-        create_fleet(ai_set, screen, ship, aliens)
+    # if len(aliens) == 0:
+    #     #destroy existing bullets and respawn
+    #     bullets.empty()
+    #     ai_set.inc_speed()
+    #
+    #     #increase level
+    #     stats.level += 1
+    #     sb.prep_level()
+    #
+    #     create_fleet(ai_set, screen, ship, aliens)
 
 def get_alien_num_x(ai_set, alien_width):
     #num of aliens fit in a row
