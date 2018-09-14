@@ -119,16 +119,6 @@ def check_collisions(ai_set, screen, stats, sb, ship, aliens, bullets):
     if len(aliens) == 0:
         new_level(ai_set, screen, stats, sb, ship, aliens, bullets)
 
-    # if len(aliens) == 0:
-    #     #destroy existing bullets and respawn
-    #     bullets.empty()
-    #     ai_set.inc_speed()
-    #
-    #     #increase level
-    #     stats.level += 1
-    #     sb.prep_level()
-    #
-    #     create_fleet(ai_set, screen, ship, aliens)
 
 def get_alien_num_x(ai_set, alien_width):
     #num of aliens fit in a row
