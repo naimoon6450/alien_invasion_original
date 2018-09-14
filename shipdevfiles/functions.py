@@ -4,7 +4,7 @@ from bullet import Bullet
 from alien import Alien
 from time import sleep
 
-def check_events(ai_set, screen, stats, play_button, ship, aliens, bullets):
+def check_events(ai_set, screen, stats, sb, play_button, ship, aliens, bullets):
     #Keyboard and mouse events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -15,9 +15,9 @@ def check_events(ai_set, screen, stats, play_button, ship, aliens, bullets):
             check_kup_events(event, ship)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            check_play_button(ai_set, screen, stats, play_button, ship, aliens, bullets, mouse_x, mouse_y)
+            check_play_button(ai_set, screen, stats, sb, play_button, ship, aliens, bullets, mouse_x, mouse_y)
 
-def check_play_button(ai_set, screen, stats, play_button, ship, aliens, bullets, mouse_x, mouse_y):
+def check_play_button(ai_set, screen, stats, sb, play_button, ship, aliens, bullets, mouse_x, mouse_y):
     #start new game on click
     button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
     if button_clicked and not stats.game_active:
@@ -28,6 +28,10 @@ def check_play_button(ai_set, screen, stats, play_button, ship, aliens, bullets,
         stats.reset_stats()
         stats.game_active = True
 
+        #reset scoreboard images
+        sb.prep_score()
+        sb.prep_high_score()
+        sb.prep_level()
     #empty list of aliens and bullets
     aliens.empty()
     bullets.empty()
@@ -103,11 +107,17 @@ def check_collisions(ai_set, screen, stats, sb, ship, aliens, bullets):
         for aliens in collisions.values():
             stats.score += ai_set.alien_points #update score if there is a collision
             sb.prep_score() #keep showing scores every time it updates
+        check_high_score(stats, sb)
 
     if len(aliens) == 0:
         #destroy existing bullets and respawn
         bullets.empty()
         ai_set.inc_speed()
+
+        #increase level
+        stats.level += 1
+        sb.prep_level()
+
         create_fleet(ai_set, screen, ship, aliens)
 
 def get_alien_num_x(ai_set, alien_width):
@@ -157,22 +167,24 @@ def change_fleet_dir(ai_set, aliens):
         alien.rect.y += ai_set.fleet_drop_speed
     ai_set.fleet_direction *= -1
 
-def update_aliens(ai_set, stats, screen, ship, aliens, bullets):
+def update_aliens(ai_set, stats, screen, sb, ship, aliens, bullets):
     check_fleet_edges(ai_set, aliens)
     #update positions of aliens
     aliens.update()
 
     #look for alien-ship collisions
     if pygame.sprite.spritecollideany(ship, aliens):
-        ship_hit(ai_set, stats, screen, ship, aliens, bullets)
+        ship_hit(ai_set, stats, screen, sb, ship, aliens, bullets)
 
     #look for aliens at bottom screen
-    bottom_hit(ai_set, stats, screen, ship, aliens, bullets)
+    bottom_hit(ai_set, stats, screen, sb, ship, aliens, bullets)
 
-def ship_hit(ai_set, stats, screen, ship, aliens, bullets):
+def ship_hit(ai_set, stats, screen, sb, ship, aliens, bullets):
     #Decrement if ship gets hit
     if stats.ships_left > 0:
         stats.ships_left -= 1
+        #update number of ships
+        sb.prep_ships()
 
         #empty list of aliens and bullets
         aliens.empty()
@@ -189,10 +201,22 @@ def ship_hit(ai_set, stats, screen, ship, aliens, bullets):
         pygame.mouse.set_visible(True)
 
 
-def bottom_hit(ai_set, stats, screen, ship, aliens, bullets):
+def bottom_hit(ai_set, stats, screen, sb, ship, aliens, bullets):
     #check if reached bottom
     screen_rect = screen.get_rect()
     for alien in aliens.sprites():
         if alien.rect.bottom >= screen_rect.bottom:
-            ship_hit(ai_set, stats, screen, ship, aliens, bullets)
+            ship_hit(ai_set, stats, screen, sb, ship, aliens, bullets)
+
             break
+
+def check_high_score(stats, sb):
+    #check to see if there's a new high score
+    hs_file = open('highscore.txt', 'w')
+    if stats.score > stats.high_score:
+        stats.high_score = stats.score
+        #write high score to file
+        hs_file.write(str(stats.score))
+
+        sb.prep_high_score()
+    hs_file.close()

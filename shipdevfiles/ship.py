@@ -1,8 +1,12 @@
 import pygame
+from pygame.sprite import Sprite
 
-class Ship():
+class Ship(Sprite): #inherits from sprite to create group of ships
 
     def __init__(self, ai_set, screen):
+
+        super(Ship, self).__init__()
+
         #initialize ship and starting position
         self.screen = screen
         self.ai_set = ai_set

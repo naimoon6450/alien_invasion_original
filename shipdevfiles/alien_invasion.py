@@ -37,11 +37,11 @@ def run_game():
         fu.create_fleet(ai_set, screen, ship, aliens)
 
         while True:
-            fu.check_events(ai_set, screen, stats, play_button, ship, aliens, bullets)
+            fu.check_events(ai_set, screen, stats, sb, play_button, ship, aliens, bullets)
             if stats.game_active:
                 ship.update()
                 fu.update_bullets(ai_set, screen, stats, sb, ship, aliens, bullets)
-                fu.update_aliens(ai_set, stats, screen, ship, aliens, bullets)
+                fu.update_aliens(ai_set, stats, screen, sb, ship, aliens, bullets)
             #Redraw screen during each pass of loop
             fu.update_screen(ai_set, screen, stats, sb, ship, aliens, bullets, play_button)
 

@@ -7,11 +7,11 @@ class Settings():
         #screen Settings
         self.screen_width = 1000
         self.screen_height = 600
-        self.bg_color = (51, 48, 85)
+        self.bg_color = (26, 48, 85)
 
         #ship Settings
         self.ship_speed_factor = 1.5
-        self.ship_limit = 3
+        self.ship_limit = 1
 
         #bullet settings
         self.bullet_speed_factor = 3
@@ -48,4 +48,3 @@ class Settings():
         self.alien_speed *= self.speedup_scale
 
         self.alien_points = int(self.alien_points * self.score_scale)
-        
